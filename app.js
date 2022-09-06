@@ -1,12 +1,11 @@
-// Grab a couple of things
-const section = document.querySelector("section");
-const playerLivesCount = document.querySelector("span");
-let playerLives = 6;
+const section = document.querySelector(".section");
+const playerLivesCount = document.querySelector(".playerLivesCount");
 
-// Link text
+const MAX_PLAYER_LIVES = 6;
+
+let playerLives = MAX_PLAYER_LIVES;
 playerLivesCount.textContent = playerLives;
 
-// Generate the data
 const getData = () => [
   { imgSrc: "./images/beatles.jpeg", id: 1, name: "beatles" },
   { imgSrc: "./images/blink182.jpeg", id: 2, name: "blink 182" },
@@ -26,28 +25,26 @@ const getData = () => [
   { imgSrc: "./images/pinkfloyd.jpeg", id: 16, name: "pink floyd" },
 ];
 
-//  Randomize
-const randomize = () => {
-  const cardData = getData();
-  cardData.sort(() => Math.random() - 0.5);
-  return cardData;
+const randomizeData = () => {
+  const data = getData();
+  data.sort(() => Math.random() - 0.5);
+  return data;
 };
 
-// Card Generator Function
 const cardGenerator = () => {
-  const cardData = randomize();
-  // Generate the HTML
-  cardData.forEach(item => {
+  const randomizedData = randomizeData();
+
+  randomizedData.forEach(item => {
     const card = document.createElement("div");
     const face = document.createElement("img");
     const back = document.createElement("div");
     card.className = "card";
     face.className = "face";
     back.className = "back";
-    // Attach the info to the cards
+
     face.src = item.imgSrc;
     card.setAttribute("name", item.name);
-    // Attach the cards to the section
+
     section.appendChild(card);
     card.appendChild(face);
     card.appendChild(back);
@@ -59,15 +56,16 @@ const cardGenerator = () => {
   });
 };
 
-// Check Cards
 const checkCards = event => {
   const clickedCard = event.target;
   clickedCard.classList.add("flipped");
-  const flippedCards = document.querySelectorAll(".flipped");
-  const toggleCard = document.querySelectorAll(".toggleCard");
 
-  // Logic
-  if (flippedCards.length === 2) {
+  const flippedCards = document.querySelectorAll(".flipped");
+  const toggleCards = document.querySelectorAll(".toggleCard");
+
+  const requiredCardMatchesCount = 2;
+
+  if (flippedCards.length === requiredCardMatchesCount) {
     if (flippedCards[0].getAttribute("name") === flippedCards[1].getAttribute("name")) {
       flippedCards.forEach(card => {
         card.classList.remove("flipped");
@@ -80,6 +78,7 @@ const checkCards = event => {
           card.classList.remove("toggleCard");
         }, 1000);
       });
+
       playerLives--;
       playerLivesCount.textContent = playerLives;
 
@@ -91,24 +90,25 @@ const checkCards = event => {
     }
   }
 
-  // Run a check to see if we won the game
+  const allCardsCount = getData().length;
+
   setTimeout(() => {
-    if (toggleCard.length === 16) {
+    if (toggleCards.length === allCardsCount) {
       restart("🤟🐧 you won");
     }
   }, 1000);
 };
 
-// Restart
 const restart = text => {
-  const cardData = randomize();
+  const randomizedData = randomizeData();
   const faces = document.querySelectorAll(".face");
   const cards = document.querySelectorAll(".card");
 
   section.style.pointerEvents = "none";
-  cardData.forEach((item, index) => {
+
+  randomizedData.forEach((item, index) => {
     cards[index].classList.remove("toggleCard");
-    // Randomize
+
     setTimeout(() => {
       cards[index].style.pointerEvents = "all";
       faces[index].src = item.imgSrc;
@@ -116,8 +116,10 @@ const restart = text => {
       section.style.pointerEvents = "all";
     }, 1000);
   });
-  playerLives = 6;
+
+  playerLives = MAX_PLAYER_LIVES;
   playerLivesCount.textContent = playerLives;
+
   setTimeout(() => window.alert(text), 100);
 };
 
